@@ -42,12 +42,10 @@ $(PATHOBJ)/%.o: $(PATHSRC)/%.cpp $(DEP)
 clean:
 	@$(ECHO) "All $(RED).o$(DEFAULT) are now deleted for $(NAME)."
 	@rm -rf $(PATHOBJ)
-	@rm -rf obj/bot.o
 
 fclean: clean
 	@$(ECHO) "$(RED)$(NAME)$(DEFAULT) is now deleted."
 	@rm -rf $(NAME)
-	@rm -rf bot/bot
 
 re: fclean all
 

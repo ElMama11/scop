@@ -6,4 +6,7 @@
 # include <iostream>
 // #include "../glfw-3.4/deps/linmath.h"
 
+void checkCompilShaderErrors(unsigned int shader);
+void checkShaderProgramErrors(unsigned int shaderProgram);
+
 #endif
