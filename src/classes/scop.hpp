@@ -4,6 +4,7 @@
 # include "../../ressources/glad/include/glad/glad.h"
 # include <GLFW/glfw3.h>
 # include <iostream>
+# include <cmath>
 // #include "../glfw-3.4/deps/linmath.h"
 
 void checkCompilShaderErrors(unsigned int shader);

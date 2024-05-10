@@ -1,4 +1,4 @@
-#include "includes/scop.hpp"
+#include "classes/scop.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -8,16 +8,20 @@ const unsigned int SCR_HEIGHT = 600;
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec3 aColor;\n"
+	"out vec3 ourColor;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = vec4(aPos, 1.0);\n"
+	"	ourColor = aColor;\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
+	"in vec3 ourColor;\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"	FragColor = vec4(ourColor, 1.0);\n"
     "}\n\0";
 
 int main() {
@@ -28,7 +32,7 @@ int main() {
 	#ifdef __APPLE__
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	#endif
-
+	
 	// glfw window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "scop", NULL, NULL);
 	if (window == NULL) {
@@ -67,52 +71,45 @@ int main() {
 
 	// set up vertex data, buffers and configure vertex attributes
 	float vertices[] = {
-        0.2f,  0.2f, 0.0f,
-        0.2f, -0.2f, 0.0f,
-        -0.2f, -0.2f, 0.0f,
-    };
-	float vertices2[] = {
-		0.8f,  0.8f, 0.0f,
-        0.8f, -0.8f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-    };
+		// positions         // colors
+		0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+		0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+	};
     unsigned int indices[] = {
         0, 1, 3,  // first Triangle
         3, 4, 5   // second Triangle
     };
-    unsigned int vbo[2], vao[2], ebo;
-    glGenVertexArrays(2, vao);
-    glGenBuffers(2, vbo);
-    glGenBuffers(1, &ebo);
+    unsigned int vbo, vao, ebo;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    // glGenBuffers(1, &ebo);
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(vao[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-	glBindVertexArray(vao[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    // glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// color attr
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		// update uniform color
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUseProgram(shaderProgram);
-        glBindVertexArray(vao[0]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(vao[1]);
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+        glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(window);

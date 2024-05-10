@@ -12,8 +12,8 @@ DEFAULT     = \033[37m
 
 PATHOBJ = obj/
 PATHSRC = src/
-HEAD =   src/includes/scop.hpp $(GLAD_HEADER)
-FILES = main.cpp 
+HEAD =   src/classes/scop.hpp src/classes/Shader.hpp $(GLAD_HEADER)
+FILES = main.cpp classes/Shader.cpp
 SRCS = $(addprefix $(PATHSRC)/,$(FILES))
 OBJ = $(patsubst %.cpp,$(PATHOBJ)/%.o,$(FILES))
 DEP = Makefile $(HEAD)
