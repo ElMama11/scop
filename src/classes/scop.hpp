@@ -5,9 +5,8 @@
 # include <GLFW/glfw3.h>
 # include <iostream>
 # include <cmath>
+# include "Shader.hpp"
+# include "stb_image.hpp"
 // #include "../glfw-3.4/deps/linmath.h"
-
-void checkCompilShaderErrors(unsigned int shader);
-void checkShaderProgramErrors(unsigned int shaderProgram);
 
 #endif
