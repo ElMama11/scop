@@ -1,8 +1,7 @@
 GCC = clang++
 CC = clang
 FLAGS =  -Wall -Wextra #-Werror
-LDFLAGS=  -lGL -lGLU -lGLEW -lglfw -ldl
-NAME = scop
+LDFLAGS=  -lglfw
 GLAD_SRC = ./ressources/glad/src/glad.cpp
 GLAD_HEADER = ./ressources/glad/include/glad/glad.h
 
