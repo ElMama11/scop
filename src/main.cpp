@@ -90,7 +90,6 @@ int main() {
 	else
 		std::cerr << "Failed to load texture" << std::endl;
 	stbi_image_free(data);
-
 	// texture 2
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
@@ -109,6 +108,8 @@ int main() {
     myShader.use();
 	glUniform1i(glGetUniformLocation(myShader.ID, "texture1"), 0); // set it manually
 	myShader.setInt("texture2", 1); // or with shader class
+
+
 	// render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -121,6 +122,14 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
+		// Create transformation
+		Matrix4 trans;
+		trans.translate(Vec3(0.5f, -0.5f, 0.0f));
+		trans.rotateZ((float)glfwGetTime() * 50.0f);
+		// Apply transformation in the shader
+		myShader.use();
+		unsigned int transformLoc = glGetUniformLocation(myShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, trans.getValuePtr());
         // render container
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

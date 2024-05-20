@@ -12,8 +12,8 @@ DEFAULT     = \033[37m
 
 PATHOBJ = obj/
 PATHSRC = src/
-HEAD =   src/classes/scop.hpp src/classes/Shader.hpp src/classes/stb_image.hpp $(GLAD_HEADER)
-FILES = main.cpp classes/Shader.cpp classes/stb_image.cpp
+HEAD =   src/classes/scop.hpp src/classes/Shader.hpp src/classes/stb_image.hpp src/classes/Matrix4.hpp src/classes/Vec4.hpp src/classes/Vec3.hpp $(GLAD_HEADER)
+FILES = main.cpp classes/Shader.cpp classes/stb_image.cpp classes/Matrix4.cpp
 SRCS = $(addprefix $(PATHSRC)/,$(FILES))
 OBJ = $(patsubst %.cpp,$(PATHOBJ)/%.o,$(FILES))
 DEP = Makefile $(HEAD)
