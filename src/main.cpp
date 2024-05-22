@@ -109,7 +109,6 @@ int main() {
 	glUniform1i(glGetUniformLocation(myShader.ID, "texture1"), 0); // set it manually
 	myShader.setInt("texture2", 1); // or with shader class
 
-
 	// render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -129,9 +128,16 @@ int main() {
 		// Apply transformation in the shader
 		myShader.use();
 		unsigned int transformLoc = glGetUniformLocation(myShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, trans.getValuePtr());
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, trans.getValuePtr());
         // render container
         glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		trans.resetToIdentityMatrix();
+		trans.translate(Vec3(-0.5f, 0.5f, 0.0f));
+		float t = static_cast<float>(sin((float)glfwGetTime()));
+		trans.scale(Vec3(t, t, t));
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, trans.getValuePtr());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);

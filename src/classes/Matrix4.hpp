@@ -13,6 +13,7 @@ class Matrix4 {
 
         Matrix4();
         ~Matrix4();
+        void resetToIdentityMatrix();
         Matrix4 multiply(const Matrix4 &other) const;
         void translate(const Vec3 &translationVec);
         void scale(Vec3 scaleVec);

@@ -15,8 +15,19 @@ Matrix4::Matrix4() {
 Matrix4::~Matrix4() {
 }
 
+void Matrix4::resetToIdentityMatrix() {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			if (i == j)
+				data[i][j] = 1.0f;
+			else
+				data[i][j] = 0.0f;
+		}
+	}
+}
+
 Matrix4 Matrix4::multiply(const Matrix4 &other) const {
-	 Matrix4 result;
+	Matrix4 result;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			result.data[i][j] = 0;
@@ -28,19 +39,19 @@ Matrix4 Matrix4::multiply(const Matrix4 &other) const {
 }
 
 void Matrix4::translate(const Vec3 &translationVec) {
-		Matrix4 translationMatrix;
-		translationMatrix.data[0][3] = translationVec.x;
-		translationMatrix.data[1][3] = translationVec.y;
-		translationMatrix.data[2][3] = translationVec.z;
-		*this = multiply(translationMatrix);
+	Matrix4 translationMatrix;
+	translationMatrix.data[0][3] = translationVec.x;
+	translationMatrix.data[1][3] = translationVec.y;
+	translationMatrix.data[2][3] = translationVec.z;
+	*this = multiply(translationMatrix);
 }
 
 void Matrix4::scale(Vec3 scaleVec) {
-        Matrix4 scaleMatrix;
-        scaleMatrix.data[0][0] = scaleVec.x;
-        scaleMatrix.data[1][1] = scaleVec.y;
-        scaleMatrix.data[2][2] = scaleVec.z;
-        *this = multiply(scaleMatrix);
+	Matrix4 scaleMatrix;
+	scaleMatrix.data[0][0] = scaleVec.x;
+	scaleMatrix.data[1][1] = scaleVec.y;
+	scaleMatrix.data[2][2] = scaleVec.z;
+	*this = multiply(scaleMatrix);
     }
 
 void Matrix4::rotateX(float angle) {
