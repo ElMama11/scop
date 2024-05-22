@@ -52,7 +52,7 @@ void Matrix4::scale(Vec3 scaleVec) {
 	scaleMatrix.data[1][1] = scaleVec.y;
 	scaleMatrix.data[2][2] = scaleVec.z;
 	*this = multiply(scaleMatrix);
-    }
+	}
 
 void Matrix4::rotateX(float angle) {
 	Matrix4 rotationMatrix;
@@ -82,6 +82,19 @@ void Matrix4::rotateZ(float angle) {
 	rotationMatrix.data[1][0] = sin(rad);
 	rotationMatrix.data[1][1] = cos(rad);
 	*this = multiply(rotationMatrix);
+}
+
+void Matrix4::perspective(float fovY, float aspect, float zNear, float zFar) {
+	float tanHalfFovy = tan(fovY / 2.0f);
+	for (int i = 0; i < 4; ++i)
+		for (int j = 0; j < 4; ++j)
+			data[i][j] = 0.0f;
+	data[0][0] = 1.0f / (aspect * tanHalfFovy);
+	data[1][1] = 1.0f / (tanHalfFovy);
+	data[2][2] = -(zFar + zNear) / (zFar - zNear);
+	data[2][3] = -1.0f;
+	data[3][2] = -(2.0f * zFar * zNear) / (zFar - zNear);
+	data[3][3] = 0.0f;
 }
 
 const float *Matrix4::getValuePtr() const {

@@ -9,7 +9,7 @@
 class Matrix4 {
 
     public:
-        float data[4][4];
+        float data[4];
 
         Matrix4();
         ~Matrix4();
@@ -20,6 +20,7 @@ class Matrix4 {
         void rotateX(float angle);
         void rotateY(float angle);
         void rotateZ(float angle);
+        void perspective(float fovY, float aspect, float zNear, float zFar);
         const float *getValuePtr() const;
         void print() const;
 };

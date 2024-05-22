@@ -82,6 +82,7 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load and generate textures
 	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true); 
 	unsigned char *data = stbi_load("ressources/textures/container.jpg", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -121,23 +122,33 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-		// Create transformation
-		Matrix4 trans;
-		trans.translate(Vec3(0.5f, -0.5f, 0.0f));
-		trans.rotateZ((float)glfwGetTime() * 50.0f);
-		// Apply transformation in the shader
 		myShader.use();
-		unsigned int transformLoc = glGetUniformLocation(myShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, trans.getValuePtr());
-        // render container
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		// Apply transformation on the shader
+		Matrix4 model;
+		Matrix4 view;
+		Matrix4 projection;
+		model.rotateX(-55.0f);
+		view.translate(Vec3(0.0f, 0.0f, 0.0f));
+		projection.perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
 
-		trans.resetToIdentityMatrix();
-		trans.translate(Vec3(-0.5f, 0.5f, 0.0f));
-		float t = static_cast<float>(sin((float)glfwGetTime()));
-		trans.scale(Vec3(t, t, t));
-		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, trans.getValuePtr());
+		// Matrix4 mvp;
+		// mvp = mvp.multiply(model);
+		// mvp = mvp.multiply(view);
+		// mvp = mvp.multiply(projection);
+
+		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
+		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
+		unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
+		// unsigned int mvpLoc = glGetUniformLocation(myShader.ID, "mvp");
+
+		// glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
+		// glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
+        // glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.getValuePtr());
+
+		// render container
+        glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
