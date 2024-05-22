@@ -123,14 +123,14 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 		myShader.use();
-		
+
 		// Apply transformation on the shader
 		Matrix4 model;
 		Matrix4 view;
 		Matrix4 projection;
-		model.rotateX(-55.0f);
-		view.translate(Vec3(0.0f, 0.0f, 0.0f));
-		projection.perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
+		model.rotateX(55.0f);
+		view.translate(Vec3(0.0f, 0.0f, -1.5f));
+		projection.perspective(-55.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		// Matrix4 mvp;
 		// mvp = mvp.multiply(model);
@@ -142,9 +142,9 @@ int main() {
 		unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
 		// unsigned int mvpLoc = glGetUniformLocation(myShader.ID, "mvp");
 
-		// glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
-		// glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
         // glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, mvp.getValuePtr());
 
 		// render container

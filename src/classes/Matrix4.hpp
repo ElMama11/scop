@@ -9,7 +9,7 @@
 class Matrix4 {
 
     public:
-        float data[4][4];
+        float data[16];
 
         Matrix4();
         ~Matrix4();
