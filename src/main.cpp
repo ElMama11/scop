@@ -30,12 +30,12 @@ int main() {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	// glEnable(GL_DEPTH_TEST);  
+	glEnable(GL_DEPTH_TEST);  
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
 
 	// set up vertex data, buffers and configure vertex attributes
-float vertices[] = {
+	float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
          0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -142,14 +142,24 @@ float vertices[] = {
     myShader.use();
 	glUniform1i(glGetUniformLocation(myShader.ID, "texture1"), 0); // set it manually
 	myShader.setInt("texture2", 1); // or with shader class
-
+	Vec3 cubePos[] = {
+		Vec3( 0.0f,  0.0f,  0.0f), 
+		Vec3( 2.0f,  5.0f, -15.0f), 
+		Vec3(-1.5f, -2.2f, -2.5f),  
+		Vec3(-3.8f, -2.0f, -12.3f),  
+		Vec3( 2.4f, -0.4f, -3.5f),  
+		Vec3(-1.7f,  3.0f, -7.5f),  
+		Vec3( 1.3f, -2.0f, -2.5f),  
+		Vec3( 1.5f,  2.0f, -2.5f), 
+		Vec3( 1.5f,  0.2f, -1.5f), 
+		Vec3(-1.3f,  1.0f, -1.5f)
+	};
 	// render loop
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
-        // render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // bind Texture
         glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
@@ -158,9 +168,8 @@ float vertices[] = {
 		myShader.use();
 
 		// Apply transformation on the shader
-		Matrix4 model, view, projection;
-		model.rotateX((float)glfwGetTime() * 55.0f);
-		model.rotateY((float)glfwGetTime() * 55.0f);
+		Matrix4 view, projection;
+		// model.rotate((float)glfwGetTime() * 55.0f, (float)glfwGetTime() * 55.0f, 0.0f);
 		view.translate(Vec3(0.0f, 0.0f, -1.5f));
 		projection.perspective(-55.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
@@ -168,13 +177,21 @@ float vertices[] = {
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
 		unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
 
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
 
-		// render container
+		//render cubes
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+		for(unsigned int i = 0; i < 10; i++) {
+			Matrix4 model;
+			model.translate(cubePos[i]);
+			float angle = 20.0f * i; 
+			model.rotate(angle, angle * 0.3f, angle * 0.5f);
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
