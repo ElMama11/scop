@@ -17,7 +17,7 @@ class Matrix4 {
         Matrix4 multiply(const Matrix4 &other) const;
         void translate(const Vec3 &translationVec);
         void scale(Vec3 scaleVec);
-        void rotate(float angleX, float angleY, float angleZ);
+        void rotate(float angle, float x, float y, float z);
         void perspective(float fovY, float aspect, float zNear, float zFar);
         const float *getValuePtr() const;
         void print() const;

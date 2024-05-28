@@ -87,39 +87,34 @@ void Matrix4::rotateZ(float angle) {
 	*this = multiply(rotationMatrix);
 }
 
-void Matrix4::rotate(float angleX, float angleY, float angleZ) {
-    float radX = angleX * M_PI / 180.0f;
-    float radY = angleY * M_PI / 180.0f;
-    float radZ = angleZ * M_PI / 180.0f;
+void Matrix4::rotate(float angle, float x, float y, float z) {
+        float rad = angle * M_PI / 180.0f;
+        float cosA = cos(rad);
+        float sinA = sin(rad);
 
-    float cosX = cos(radX);
-    float sinX = sin(radX);
-    float cosY = cos(radY);
-    float sinY = sin(radY);
-    float cosZ = cos(radZ);
-    float sinZ = sin(radZ);
+        float len = sqrt(x*x + y*y + z*z);
+        if (len != 1.0f) {
+            float invLen = 1.0f / len;
+            x *= invLen;
+            y *= invLen;
+            z *= invLen;
+        }
 
-    Matrix4 rotationX;
-    rotationX.data[5] = cosX;
-    rotationX.data[6] = -sinX;
-    rotationX.data[9] = sinX;
-    rotationX.data[10] = cosX;
+        Matrix4 rotation;
+        rotation.data[0] = cosA + x*x*(1-cosA);
+        rotation.data[1] = x*y*(1-cosA) - z*sinA;
+        rotation.data[2] = x*z*(1-cosA) + y*sinA;
 
-    Matrix4 rotationY;
-    rotationY.data[0] = cosY;
-    rotationY.data[2] = sinY;
-    rotationY.data[8] = -sinY;
-    rotationY.data[10] = cosY;
+        rotation.data[4] = y*x*(1-cosA) + z*sinA;
+        rotation.data[5] = cosA + y*y*(1-cosA);
+        rotation.data[6] = y*z*(1-cosA) - x*sinA;
 
-    Matrix4 rotationZ;
-    rotationZ.data[0] = cosZ;
-    rotationZ.data[1] = -sinZ;
-    rotationZ.data[4] = sinZ;
-    rotationZ.data[5] = cosZ;
+        rotation.data[8] = z*x*(1-cosA) - y*sinA;
+        rotation.data[9] = z*y*(1-cosA) + x*sinA;
+        rotation.data[10] = cosA + z*z*(1-cosA);
 
-    // Combine the rotation matrices
-    *this = rotationZ.multiply(rotationY).multiply(rotationX);
-}
+        *this = this->multiply(rotation);
+    }
 
 void Matrix4::perspective(float fovY, float aspect, float zNear, float zFar) {
 	float tanHalfFovy = tan(fovY / 2.0f);

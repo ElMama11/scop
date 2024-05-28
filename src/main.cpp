@@ -169,9 +169,8 @@ int main() {
 
 		// Apply transformation on the shader
 		Matrix4 view, projection;
-		// model.rotate((float)glfwGetTime() * 55.0f, (float)glfwGetTime() * 55.0f, 0.0f);
-		view.translate(Vec3(0.0f, 0.0f, -1.5f));
-		projection.perspective(-55.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		view.translate(Vec3(0.0f, 0.0f, -2.0f));
+		projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
@@ -185,13 +184,12 @@ int main() {
 		for(unsigned int i = 0; i < 10; i++) {
 			Matrix4 model;
 			model.translate(cubePos[i]);
-			float angle = 20.0f * i; 
-			model.rotate(angle, angle * 0.3f, angle * 0.5f);
+			float angle = 20.0f * i;
+			model.rotate(angle, 1.0f, 0.3f, 0.5f);
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
