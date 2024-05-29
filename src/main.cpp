@@ -169,7 +169,7 @@ int main() {
 
 		// Apply transformation on the shader
 		Matrix4 view, projection;
-		view.translate(Vec3(0.0f, 0.0f, -2.0f));
+		view.translate(Vec3(0.0f, 0.0f, -2.5f));
 		projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
@@ -186,6 +186,8 @@ int main() {
 			model.translate(cubePos[i]);
 			float angle = 20.0f * i;
 			model.rotate(angle, 1.0f, 0.3f, 0.5f);
+			if (i % 2 == 0)
+				model.rotate((float)glfwGetTime() * 50.0f, 0.5f, 1.0f, 0.0f);
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
