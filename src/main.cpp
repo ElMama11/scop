@@ -154,6 +154,19 @@ int main() {
 		Vec3( 1.5f,  0.2f, -1.5f), 
 		Vec3(-1.3f,  1.0f, -1.5f)
 	};
+
+	//Camera
+	Vec3 cameraPos(0.0f, 0.0f, 3.0f);
+	Vec3 cameraTarget(0.0f, 0.0f, 0.0f);
+	Vec3 cameraDirection(cameraPos - cameraTarget);
+	cameraDirection.normalize();
+	Vec3 up(0.0f, 1.0f, 0.0f);
+	Vec3 cameraRight;
+	cameraRight = cameraRight.cross(up, cameraDirection);
+	cameraRight.normalize();
+	Vec3 cameraUp;
+	cameraUp = cameraUp.cross(cameraDirection, cameraRight);
+
 	// render loop
     while (!glfwWindowShouldClose(window))
     {
