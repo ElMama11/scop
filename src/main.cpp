@@ -167,6 +167,10 @@ int main() {
 	Vec3 cameraUp;
 	cameraUp = cameraUp.cross(cameraDirection, cameraRight);
 
+	Matrix4 projection;
+	projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
 	// render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -181,16 +185,14 @@ int main() {
 		myShader.use();
 
 		// Apply transformation on the shader
-		Matrix4 view, projection;
-		view.translate(Vec3(0.0f, 0.0f, -2.5f));
-		projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
 		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
-		unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
-
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
+		Matrix4 view; // make sure to initialize matrix to identity matrix first
+        float radius = 10.0f;
+        float camX = static_cast<float>(sin(glfwGetTime()) * radius);
+        float camZ = static_cast<float>(cos(glfwGetTime()) * radius);
+        view = view.lookAt(Vec3(camX, 0.0f, camZ), Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
 
 		//render cubes
         glBindVertexArray(vao);

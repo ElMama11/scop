@@ -114,7 +114,7 @@ void Matrix4::rotate(float angle, float x, float y, float z) {
         rotation.data[10] = cosA + z*z*(1-cosA);
 
         *this = this->multiply(rotation);
-    }
+}
 
 void Matrix4::perspective(float fovY, float aspect, float zNear, float zFar) {
 	float tanHalfFovy = tan(fovY / 2.0f);
@@ -125,6 +125,29 @@ void Matrix4::perspective(float fovY, float aspect, float zNear, float zFar) {
 	data[10] = -(zFar + zNear) / (zFar - zNear);
 	data[11] = -1.0f;
 	data[14] = -(2.0f * zFar * zNear) / (zFar - zNear);
+}
+
+Matrix4 Matrix4::lookAt(const Vec3 &cameraPos, const Vec3 &center, const Vec3 &up) {
+        Vec3 f = (center - cameraPos).normalize();
+        Vec3 u = up.normalize();
+        Vec3 s = Vec3::cross(f, u).normalize();
+        u = Vec3::cross(s, f);
+
+        Matrix4 result;
+        result.data[0] = s.x;
+        result.data[4] = s.y;
+        result.data[8] = s.z;
+        result.data[1] = u.x;
+        result.data[5] = u.y;
+        result.data[9] = u.z;
+        result.data[2] = -f.x;
+        result.data[6] = -f.y;
+        result.data[10] = -f.z;
+        result.data[12] = -s.x * cameraPos.x - s.y * cameraPos.y - s.z * cameraPos.z;
+        result.data[13] = -u.x * cameraPos.x - u.y * cameraPos.y - u.z * cameraPos.z;
+        result.data[14] = f.x * cameraPos.x + f.y * cameraPos.y + f.z * cameraPos.z;
+
+        return result;
 }
 
 const float *Matrix4::getValuePtr() const {

@@ -24,5 +24,6 @@ class Matrix4 {
         void rotateX(float angle);
         void rotateY(float angle);
         void rotateZ(float angle);
+        Matrix4 lookAt(const Vec3 &cameraPos, const Vec3 &center, const Vec3 &up);
 };
 #endif
