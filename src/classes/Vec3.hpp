@@ -36,6 +36,10 @@ class Vec3 {
 			return Vec3(x * scalar, y * scalar, z * scalar);
 		}
 
+		friend Vec3 operator*(float scalar, const Vec3& vec) {
+			return vec * scalar;
+		}
+
 		Vec3 operator/(float scalar) const {
 			return Vec3(x / scalar, y / scalar, z / scalar);
 		}
