@@ -6,16 +6,11 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-Vec3 cameraPos(0.0f, 0.0f, 3.0f);
-Vec3 cameraFront(0.0f, 0.0f, -1.0f);
-Vec3 cameraUp(0.0f, 1.0f, 0.0f);
-
+// camera
+Camera camera(Vec3(0.0f, 0.0f, 3.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-float yaw   = -90.0f;
-float pitch =  0.0f;
-float lastX =  800.0f / 2.0;
-float lastY =  600.0 / 2.0;
-float fov   =  45.0f;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -185,15 +180,11 @@ int main() {
 	// Vec3 cameraUp;
 	// cameraUp = cameraUp.cross(cameraDirection, cameraRight);
 
-	Matrix4 projection;
-	projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-	unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
 		// per frame logic
-		float currentFrame = glfwGetTime();
+		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;  
 
@@ -207,23 +198,28 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture2);
 		myShader.use();
 
+		// pass projection matrix to shader
+		Matrix4 projection;
+		projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
+
 		// Apply transformation on the shader
 		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
-		//Camera/view tranformation
+		// Camera/view tranformation
 		Matrix4 view;
-		view = view.lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		view = camera.GetViewMatrix();
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
 
-		//render cubes
+		// render cubes
 		glBindVertexArray(vao);
 		for(unsigned int i = 0; i < 10; i++) {
 			Matrix4 model;
 			model.translate(cubePos[i]);
 			float angle = 20.0f * i;
 			model.rotate(angle, 1.0f, 0.3f, 0.5f);
-			if (i % 2 == 0)
-				model.rotate((float)glfwGetTime() * 50.0f, 0.5f, 1.0f, 0.0f);
+			model.rotate((float)glfwGetTime() * 50.0f, 0.5f, 1.0f, 0.0f);
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -238,18 +234,16 @@ int main() {
 
 // Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow *window) {
-	float cameraSpeed = 2.5f * deltaTime;
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	Vec3 rightVec = rightVec.cross(cameraFront, cameraUp);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraPos = cameraPos + cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraPos = cameraPos - cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos = cameraPos -  rightVec.normalize() * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos = cameraPos +  rightVec.normalize() * cameraSpeed;
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 // Whenever the window size changed (by OS or user resize) this callback function executes
@@ -257,52 +251,25 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-float degreesToRadians(float degrees) {
-	return degrees * (M_PI / 180.0f);
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-	float xpos = static_cast<float>(xposIn);
-	float ypos = static_cast<float>(yposIn);
-
-	if (firstMouse)
-	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-	lastX = xpos;
-	lastY = ypos;
-
-	float sensitivity = 0.1f; // change this value to your liking
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	yaw += xoffset;
-	pitch += yoffset;
-
-	// make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	Vec3 front;
-	front.x = cos(degreesToRadians(yaw)) * cos(degreesToRadians(pitch));
-	front.y = sin(degreesToRadians(pitch));
-	front.z = sin(degreesToRadians(yaw)) * cos(degreesToRadians(pitch));
-	cameraFront = front.normalize();
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	fov -= (float)yoffset;
-	if (fov < 1.0f)
-		fov = 1.0f;
-	if (fov > 45.0f)
-		fov = 45.0f;
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }

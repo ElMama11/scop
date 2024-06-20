@@ -10,6 +10,7 @@
 # include "Matrix4.hpp"
 # include "Vec4.hpp"
 # include "Vec3.hpp"
+# include "Camera.hpp"
 // #include "../glfw-3.4/deps/linmath.h"
 
 void processInput(GLFWwindow *window, Shader myShader);
