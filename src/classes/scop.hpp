@@ -2,7 +2,7 @@
 # define SCOP_HPP
 
 # include "../../resources/glad/include/glad/glad.h"
-# include </home/elmama/Documents/42/scop/resources/glfw-3.4/include/GLFW/glfw3.h>
+# include <GLFW/glfw3.h>
 # include <iostream>
 # include <cmath>
 # include "Shader.hpp"

@@ -46,7 +46,7 @@ int main() {
 	}
 	glEnable(GL_DEPTH_TEST);
 
-	Mesh mesh = Parser::parseOBJ("resources/obj/42.obj");
+	Mesh mesh = Parser::parseOBJ("resources/obj/teapot.obj");
 
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
