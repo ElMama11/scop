@@ -3,8 +3,8 @@ CC = clang
 FLAGS =  -Wall -Wextra #-Werror
 LDFLAGS=  -lGL -lGLU -lGLEW -lglfw -ldl
 NAME = scop
-GLAD_SRC = ./ressources/glad/src/glad.cpp
-GLAD_HEADER = ./ressources/glad/include/glad/glad.h
+GLAD_SRC = ./resources/glad/src/glad.cpp
+GLAD_HEADER = ./resources/glad/include/glad/glad.h
 
 GREEN       = \033[32m
 RED         = \033[31m
@@ -12,8 +12,8 @@ DEFAULT     = \033[37m
 
 PATHOBJ = obj/
 PATHSRC = src/
-HEAD =   src/classes/scop.hpp src/classes/Shader.hpp src/classes/stb_image.hpp src/classes/Matrix4.hpp src/classes/Vec4.hpp src/classes/Vec3.hpp src/classes/Camera.hpp src/classes/Vec2.hpp src/classes/Mesh.hpp $(GLAD_HEADER)
-FILES = main.cpp classes/Shader.cpp classes/stb_image.cpp classes/Matrix4.cpp classes/Camera.cpp classes/Mesh.cpp
+HEAD =   src/classes/scop.hpp src/classes/Shader.hpp src/classes/stb_image.hpp src/classes/Matrix4.hpp src/classes/Vec4.hpp src/classes/Vec3.hpp src/classes/Camera.hpp src/classes/Vec2.hpp src/classes/Mesh.hpp src/classes/Parser.hpp $(GLAD_HEADER)
+FILES = main.cpp classes/Shader.cpp classes/stb_image.cpp classes/Matrix4.cpp classes/Camera.cpp classes/Mesh.cpp classes/Parser.cpp
 SRCS = $(addprefix $(PATHSRC)/,$(FILES))
 OBJ = $(patsubst %.cpp,$(PATHOBJ)/%.o,$(FILES))
 DEP = Makefile $(HEAD)

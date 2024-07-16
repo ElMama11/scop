@@ -1,5 +1,5 @@
-#ifndef VEC4_HPP
-#define VEC4_HPP
+#ifndef VEC2_HPP
+#define VEC2_HPP
 
 class Vec2 {
 	public:

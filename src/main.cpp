@@ -44,7 +44,10 @@ int main() {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	glEnable(GL_DEPTH_TEST);  
+	glEnable(GL_DEPTH_TEST);
+
+	Mesh mesh = Parser::parseOBJ("resources/obj/42.obj");
+
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
 
@@ -130,7 +133,7 @@ int main() {
 	// load and generate textures
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true); 
-	unsigned char *data = stbi_load("ressources/textures/container.jpg", &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -145,7 +148,7 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	data = stbi_load("ressources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+	data = stbi_load("resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
    		glGenerateMipmap(GL_TEXTURE_2D);
@@ -191,11 +194,11 @@ int main() {
 		processInput(window);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// bind Texture
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
+		// // bind Texture
+		// glActiveTexture(GL_TEXTURE0);
+		// glBindTexture(GL_TEXTURE_2D, texture1);
+		// glActiveTexture(GL_TEXTURE1);
+		// glBindTexture(GL_TEXTURE_2D, texture2);
 		myShader.use();
 
 		// pass projection matrix to shader
@@ -222,8 +225,8 @@ int main() {
 			model.rotate((float)glfwGetTime() * 50.0f, 0.5f, 1.0f, 0.0f);
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+			mesh.draw(myShader);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
 		glfwPollEvents();

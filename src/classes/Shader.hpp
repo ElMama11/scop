@@ -1,7 +1,7 @@
 #ifndef SHADER_HPP
 # define SHADER_HPP
 
-# include "../../ressources/glad/include/glad/glad.h"
+# include "../../resources/glad/include/glad/glad.h"
   
 # include <string>
 # include <fstream>

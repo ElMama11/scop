@@ -1,7 +1,7 @@
 #ifndef SCOP_HPP
 # define SCOP_HPP
 
-# include "../../ressources/glad/include/glad/glad.h"
+# include "../../resources/glad/include/glad/glad.h"
 # include <GLFW/glfw3.h>
 # include <iostream>
 # include <cmath>
@@ -10,7 +10,10 @@
 # include "Matrix4.hpp"
 # include "Vec4.hpp"
 # include "Vec3.hpp"
+# include "Vec2.hpp"
 # include "Camera.hpp"
+# include "Parser.hpp"
+# include "Mesh.hpp"
 // #include "../glfw-3.4/deps/linmath.h"
 
 void processInput(GLFWwindow *window, Shader myShader);
