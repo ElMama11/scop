@@ -47,22 +47,37 @@ void Parser::processVertex(std::stringstream &ss, std::vector<Vertex> &vertices,
     while (ss >> vertexData) {
         std::stringstream vertexSS(vertexData);
         std::string indexStr;
-        std::vector<unsigned int> indicesTemp;
+        std::vector<unsigned int> positionIndex, texCoordIndex, normalIndex;
 
+        int i = 0;
         while (std::getline(vertexSS, indexStr, '/')) {
-            indicesTemp.push_back(std::stoi(indexStr));
+            if (!indexStr.empty()) {
+                unsigned int index = std::stoi(indexStr);
+                if (index < 0) {
+                    index = tempPositions.size() + index + 1;
+                }
+                if (i == 0) {
+                    positionIndex.push_back(index);
+                } else if (i == 1) {
+                    texCoordIndex.push_back(index);
+                } else if (i == 2) {
+                    normalIndex.push_back(index);
+                }
+            }
+            i++;
         }
 
         Vertex vertex;
-        vertex.position = tempPositions[indicesTemp[0] - 1];
-        if (indicesTemp.size() > 1 && !indexStr.empty()) {
-            vertex.texCoords = tempTexCoords[indicesTemp[1] - 1];
+        vertex.position = tempPositions[positionIndex[0] - 1];
+        if (!texCoordIndex.empty()) {
+            vertex.texCoords = tempTexCoords[texCoordIndex[0] - 1];
         }
-        if (indicesTemp.size() > 2 && !indexStr.empty()) {
-            vertex.normal = tempNormals[indicesTemp[2] - 1];
+        if (!normalIndex.empty()) {
+            vertex.normal = tempNormals[normalIndex[0] - 1];
         }
 
         vertices.push_back(vertex);
         indices.push_back(vertices.size() - 1);
     }
 }
+
