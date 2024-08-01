@@ -24,7 +24,11 @@ bool cKeyPressed = false;
 float deltaTime = 0.5f;
 float lastFrame = 0.0f;
 
-int main() {
+int main(int ac, char **av) {
+	if (av[1] == NULL) {
+		std::cerr << "Please enter an object name with the .obj" << std::endl;
+		return 0;
+	}
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -53,8 +57,10 @@ int main() {
 		return -1;
 	}
 	glEnable(GL_DEPTH_TEST);
-
-	Mesh mesh = Parser::parseOBJ("resources/obj/backpack.obj");
+	std::string objPathSuffix = av[1];
+	std::string objPath = "resources/obj/" + objPathSuffix;
+	std::cout << objPath << std::endl;
+	Mesh mesh = Parser::parseOBJ(objPath);
 
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
@@ -98,11 +104,11 @@ int main() {
 		myShader.use();
 
  		myShader.setBool("useTexture", useTexture);
-        // Bind texture if using texture
-        if (useTexture) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture);
-        }
+		// Bind texture if using texture
+		if (useTexture) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
+		}
 
 		// pass projection matrix to shader
 		Matrix4 projection;
@@ -140,20 +146,19 @@ void processInput(GLFWwindow *window) {
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(BOTTOM, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(UP, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+		camera.ProcessKeyboard(BOTTOM, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && !tKeyPressed) {
-        tKeyPressed = true;
-        useTexture = !useTexture;
-    } 
-	else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE) {
-        tKeyPressed = false;
-    }
+		tKeyPressed = true;
+		useTexture = !useTexture;
+	} 
+	else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE)
+		tKeyPressed = false;
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && cKeyPressed == false) {
 		cKeyPressed = true;
 		if (freeCamera == false) {
@@ -175,21 +180,21 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
+	float xpos = static_cast<float>(xposIn);
+	float ypos = static_cast<float>(yposIn);
 
-    if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
+	if (firstMouse) {
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+	lastX = xpos;
+	lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
