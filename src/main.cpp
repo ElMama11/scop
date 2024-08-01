@@ -1,18 +1,25 @@
 #include "classes/scop.hpp"
+# include "classes/stb_image.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
-const unsigned int SCR_WIDTH = 1024;
-const unsigned int SCR_HEIGHT = 768;
+const unsigned int SCR_WIDTH = 1980;
+const unsigned int SCR_HEIGHT = 1080;
 
 float rotationAngle = 0.0f;
 
+// Texture
+bool useTexture = false;
+bool tKeyPressed = false;
+
 // camera
-Camera camera(Vec3(0.0f, 0.0f, 3.0f));
+Camera camera(Vec3(0.0f, 0.0f, 6.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
+bool freeCamera = false;
+bool cKeyPressed = false;
 
 float deltaTime = 0.5f;
 float lastFrame = 0.0f;
@@ -35,8 +42,7 @@ int main() {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	// glfwSetCursorPosCallback(window, mouse_callback);
 
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -48,11 +54,35 @@ int main() {
 	}
 	glEnable(GL_DEPTH_TEST);
 
-	Mesh mesh = Parser::parseOBJ("resources/obj/teapot.obj");
+	Mesh mesh = Parser::parseOBJ("resources/obj/backpack.obj");
 
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
 
+	// TEXTURE
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load and generate textures
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load("resources/textures/backpack.jpg", &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cerr << "Failed to load texture" << std::endl;
+
+	myShader.use();
+	myShader.setInt("ourTexture", 0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -66,6 +96,13 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		myShader.use();
+
+ 		myShader.setBool("useTexture", useTexture);
+        // Bind texture if using texture
+        if (useTexture) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture);
+        }
 
 		// pass projection matrix to shader
 		Matrix4 projection;
@@ -103,13 +140,33 @@ void processInput(GLFWwindow *window) {
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.ProcessKeyboard(BOTTOM, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.ProcessKeyboard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && !tKeyPressed) {
+        tKeyPressed = true;
+        useTexture = !useTexture;
+    } 
+	else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE) {
+        tKeyPressed = false;
+    }
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && cKeyPressed == false) {
+		cKeyPressed = true;
+		if (freeCamera == false) {
+			glfwSetCursorPosCallback(window, mouse_callback);
+			freeCamera = true;
+		}
+		else {
+			glfwSetCursorPosCallback(window, NULL);
+			freeCamera = false;
+		}
+	}
+	else if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE)
+		cKeyPressed = false;
 }
 
 // Whenever the window size changed (by OS or user resize) this callback function executes
@@ -136,6 +193,3 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
-}

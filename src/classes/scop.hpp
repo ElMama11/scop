@@ -6,7 +6,7 @@
 # include <iostream>
 # include <cmath>
 # include "Shader.hpp"
-# include "stb_image.hpp"
+
 # include "Matrix4.hpp"
 # include "Vec4.hpp"
 # include "Vec3.hpp"

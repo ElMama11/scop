@@ -29,10 +29,10 @@ Matrix4 Camera::GetViewMatrix() {
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
 	float velocity = MovementSpeed * deltaTime;
-	if (direction == FORWARD)
-		Position = Position + Front * velocity;
-	if (direction == BACKWARD)
-		Position = Position - Front * velocity;
+	if (direction == UP)
+		Position = Position + Up * velocity;
+	if (direction == BOTTOM)
+		Position = Position - Up * velocity;
 	if (direction == LEFT)
 		Position = Position - Right * velocity;
 	if (direction == RIGHT)
