@@ -59,31 +59,50 @@ int main(int ac, char **av) {
 	glEnable(GL_DEPTH_TEST);
 	std::string objPathSuffix = av[1];
 	std::string objPath = "resources/obj/" + objPathSuffix;
-	std::cout << objPath << std::endl;
 	Mesh mesh = Parser::parseOBJ(objPath);
 
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
 
-	// TEXTURE
+	// // TEXTURE
+	// unsigned int texture;
+	// glGenTextures(1, &texture);
+	// glBindTexture(GL_TEXTURE_2D, texture);
+	// // set the texture wrapping parameters
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// // set texture filtering parameters
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// // load and generate textures
+	// int width, height, nrChannels;
+	// unsigned char *data = stbi_load("resources/textures/diffuse.bmp", &width, &height, &nrChannels, 0);
+	// if (data) {
+	// 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	// 	glGenerateMipmap(GL_TEXTURE_2D);
+	// }
+	// else
+	// 	std::cerr << "Failed to load texture" << std::endl;
+
+
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	// set texture filtering parameters
+
+	// Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load and generate textures
-	int width, height, nrChannels;
-	unsigned char *data = stbi_load("resources/textures/backpack.jpg", &width, &height, &nrChannels, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	// Load and generate texture
+	BmpImage image("resources/textures/backpack.bmp");
+	if (image.isValid()) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.getData());
 		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
+	} else {
 		std::cerr << "Failed to load texture" << std::endl;
+	}
 
 	myShader.use();
 	myShader.setInt("ourTexture", 0);

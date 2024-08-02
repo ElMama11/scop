@@ -14,6 +14,7 @@
 # include "Camera.hpp"
 # include "Parser.hpp"
 # include "Mesh.hpp"
+# include "BmpImage.hpp"
 // #include "../glfw-3.4/deps/linmath.h"
 
 void processInput(GLFWwindow *window, Shader myShader);
