@@ -21,5 +21,6 @@ void processInput(GLFWwindow *window, Shader myShader);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
+Vec3 calculateCenter(const std::vector<Vertex>& vertices);
 
 #endif

@@ -13,6 +13,9 @@ float rotationAngle = 0.0f;
 bool useTexture = false;
 bool tKeyPressed = false;
 
+bool zKeyPressed = false;
+bool wireframe = false;
+
 // camera
 Camera camera(Vec3(0.0f, 0.0f, 6.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -129,15 +132,14 @@ int main(int ac, char **av) {
 			glBindTexture(GL_TEXTURE_2D, texture);
 		}
 
+		unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
+		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
+		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
+
 		// pass projection matrix to shader
 		Matrix4 projection;
 		projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
-
-		// Apply transformation on the shader
-		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
-		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
 		// Camera/view tranformation
 		Matrix4 view;
 		view = camera.GetViewMatrix();
@@ -178,6 +180,19 @@ void processInput(GLFWwindow *window) {
 	} 
 	else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE)
 		tKeyPressed = false;
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && zKeyPressed == false) {
+		zKeyPressed = true;
+		if (wireframe == false) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			wireframe = true;
+		}
+		else {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			wireframe = false;
+		}
+	}
+	else if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_RELEASE)
+		zKeyPressed = false;
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && cKeyPressed == false) {
 		cKeyPressed = true;
 		if (freeCamera == false) {
