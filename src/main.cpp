@@ -1,20 +1,20 @@
 #include "scop.hpp"
 
-const unsigned int SCR_WIDTH = 1980;
-const unsigned int SCR_HEIGHT = 1080;
-
+extern const unsigned int SCR_WIDTH;
+extern const unsigned int SCR_HEIGHT;
 float rotationAngle = 0.0f;
 
-// Texture
+// Texture switch
 bool useTexture = false;
 bool tKeyPressed = false;
 bool transitioning = false;
 float transitionFactor = 0.0f;
 
+// Wireframe switch
 bool zKeyPressed = false;
 bool wireframe = false;
 
-// camera
+// Camera
 Camera camera(Vec3(0.0f, 0.0f, 6.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -30,33 +30,14 @@ int main(int ac, char **av) {
 		std::cerr << "args : [object] [texture]\n\nInput : WASD = Move the obj\n\tZ = Wireframe mode\n\tT = Texturing" << std::endl;
 		return 0;
 	}
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	#ifdef __APPLE__
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	#endif
-	
-	// glfw window creation
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "scop", NULL, NULL);
-	if (window == NULL) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	// tell GLFW to capture our mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	// glad: load all OpenGL function pointers
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
-	glEnable(GL_DEPTH_TEST);
+	GLFWwindow* window;
+	try {
+        window = initializeGlfw();
+    }
+	catch (const std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
 	std::string objPathSuffix = av[1];
 	std::string texPathSuffix = av[2];
 	std::string objPath = "resources/obj/" + objPathSuffix + ".obj";
@@ -212,10 +193,7 @@ void processInput(GLFWwindow *window) {
 		cKeyPressed = false;
 }
 
-// Whenever the window size changed (by OS or user resize) this callback function executes
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
-}
+
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 	float xpos = static_cast<float>(xposIn);

@@ -13,11 +13,12 @@
 # include "classes/Parser.hpp"
 # include "classes/Mesh.hpp"
 # include "classes/BmpImage.hpp"
+# include "main_utils.cpp"
+const unsigned int SCR_WIDTH = 1980;
+const unsigned int SCR_HEIGHT = 1080;
 
 void processInput(GLFWwindow *window);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
-Vec3 calculateCenter(const std::vector<Vertex>& vertices);
-
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+GLFWwindow* initializeGlfw();
 #endif
