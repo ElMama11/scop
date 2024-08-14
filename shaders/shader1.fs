@@ -5,21 +5,22 @@ in vec2 TexCoord;
 out vec4 FragColor;
 
 uniform sampler2D ourTexture;
-uniform bool useTexture;
+uniform float transitionFactor;
 
 void main() {
-    if (useTexture)
-        FragColor = texture(ourTexture, TexCoord);
-    else {
-        // Use the fragment position to create a unique shade for each face
-        vec3 absPos = abs(FragPos);
+    // Use the fragment position to create a unique shade for each face
+    vec3 absPos = abs(FragPos);
 
-        // Calculate a grey shade based on the position
-        float greyShade = fract(absPos.x * 0.1 + absPos.y * 0.15 + absPos.z * 0.2);
+    // Calculate a grey shade based on the position
+    float greyShade = fract(absPos.x * 0.1 + absPos.y * 0.15 + absPos.z * 0.2);
 
-        // Adjust the range of the grey shade
-        greyShade = 0.3 + greyShade * 0.5;
+    // Adjust the range of the grey shade
+    greyShade = 0.3 + greyShade * 0.5;
+    vec4 baseColor = vec4(vec3(greyShade), 1.0);
 
-        FragColor = vec4(vec3(greyShade), 1.0);
-    }
+    // Calculate the texture color
+    vec4 textureColor = texture(ourTexture, TexCoord);
+
+    // Blend between base color and texture color using transitionFactor
+    FragColor = mix(baseColor, textureColor, transitionFactor);
 }

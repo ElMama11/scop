@@ -1,8 +1,4 @@
-#include "classes/scop.hpp"
-# include "classes/stb_image.hpp"
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+#include "scop.hpp"
 
 const unsigned int SCR_WIDTH = 1980;
 const unsigned int SCR_HEIGHT = 1080;
@@ -12,6 +8,8 @@ float rotationAngle = 0.0f;
 // Texture
 bool useTexture = false;
 bool tKeyPressed = false;
+bool transitioning = false;
+float transitionFactor = 0.0f;
 
 bool zKeyPressed = false;
 bool wireframe = false;
@@ -28,8 +26,8 @@ float deltaTime = 0.5f;
 float lastFrame = 0.0f;
 
 int main(int ac, char **av) {
-	if (av[1] == NULL) {
-		std::cerr << "Please enter an object name with the .obj" << std::endl;
+	if (av[1] == NULL || av[2] == NULL || ac != 3) {
+		std::cerr << "args : [object] [texture]\n\nInput : WASD = Move the obj\n\tZ = Wireframe mode\n\tT = Texturing" << std::endl;
 		return 0;
 	}
 	glfwInit();
@@ -49,7 +47,6 @@ int main(int ac, char **av) {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	// glfwSetCursorPosCallback(window, mouse_callback);
 
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -61,37 +58,25 @@ int main(int ac, char **av) {
 	}
 	glEnable(GL_DEPTH_TEST);
 	std::string objPathSuffix = av[1];
-	std::string objPath = "resources/obj/" + objPathSuffix;
-	Mesh mesh = Parser::parseOBJ(objPath);
+	std::string texPathSuffix = av[2];
+	std::string objPath = "resources/obj/" + objPathSuffix + ".obj";
+	std::string texPath = "resources/textures/" + texPathSuffix + ".bmp";
+	Mesh mesh;
+	try {
+        mesh = Parser::parseOBJ(objPath);
+    }
+	catch (const std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
+	std::cout << texPath << std::endl;
 
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
 
-	// // TEXTURE
-	// unsigned int texture;
-	// glGenTextures(1, &texture);
-	// glBindTexture(GL_TEXTURE_2D, texture);
-	// // set the texture wrapping parameters
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	// // set texture filtering parameters
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// // load and generate textures
-	// int width, height, nrChannels;
-	// unsigned char *data = stbi_load("resources/textures/diffuse.bmp", &width, &height, &nrChannels, 0);
-	// if (data) {
-	// 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	// 	glGenerateMipmap(GL_TEXTURE_2D);
-	// }
-	// else
-	// 	std::cerr << "Failed to load texture" << std::endl;
-
-
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-
 	// Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -99,13 +84,13 @@ int main(int ac, char **av) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Load and generate texture
-	BmpImage image("resources/textures/backpack.bmp");
+	BmpImage image(texPath);
 	if (image.isValid()) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.getData());
 		glGenerateMipmap(GL_TEXTURE_2D);
-	} else {
-		std::cerr << "Failed to load texture" << std::endl;
 	}
+	else
+		std::cerr << "Failed to load texture" << std::endl;
 
 	myShader.use();
 	myShader.setInt("ourTexture", 0);
@@ -125,7 +110,25 @@ int main(int ac, char **av) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		myShader.use();
 
- 		myShader.setBool("useTexture", useTexture);
+		 // Smooth transition for textures
+        if (transitioning) {
+            if (useTexture) {
+                transitionFactor += deltaTime;
+                if (transitionFactor >= 1.0f) {
+                    transitionFactor = 1.0f;
+                    transitioning = false;
+                }
+            }
+			else {
+                transitionFactor -= deltaTime;
+                if (transitionFactor <= 0.0f) {
+                    transitionFactor = 0.0f;
+                    transitioning = false;
+                }
+            }
+        }
+        myShader.setFloat("transitionFactor", transitionFactor);
+
 		// Bind texture if using texture
 		if (useTexture) {
 			glActiveTexture(GL_TEXTURE0);
@@ -175,11 +178,12 @@ void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && !tKeyPressed) {
-		tKeyPressed = true;
-		useTexture = !useTexture;
-	} 
+        tKeyPressed = true;
+        transitioning = true;
+        useTexture = !useTexture;
+    }
 	else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE)
-		tKeyPressed = false;
+        tKeyPressed = false;
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && zKeyPressed == false) {
 		zKeyPressed = true;
 		if (wireframe == false) {
@@ -231,4 +235,3 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
-

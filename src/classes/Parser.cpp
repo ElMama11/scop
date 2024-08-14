@@ -11,7 +11,7 @@ Mesh Parser::parseOBJ(const std::string &filePath) {
 
 	std::ifstream file(filePath);
 	if (!file.is_open()) {
-		std::cerr << "Failed to open file: " << filePath << std::endl;
+		throw std::runtime_error("Failed to open file: " + filePath);
 		return Mesh(vertices, indices, textures);
 	}
 
