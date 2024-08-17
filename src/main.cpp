@@ -22,6 +22,22 @@ bool cKeyPressed = false;
 float deltaTime = 0.5f;
 float lastFrame = 0.0f;
 
+Vec3 calculateCenter(const std::vector<Vertex>& vertices) {
+    Vec3 center(0.0f, 0.0f, 0.0f);
+    if (vertices.empty()) return center; // Return early if no vertices
+
+    for (const auto& vertex : vertices) {
+        center.x += vertex.position.x;
+        center.y += vertex.position.y;
+        center.z += vertex.position.z;
+    }
+    center.x /= vertices.size();
+    center.y /= vertices.size();
+    center.z /= vertices.size();
+    return center;
+}
+
+
 int main(int ac, char **av) {
 	if (av[1] == NULL || av[2] == NULL || ac != 3) {
 		std::cerr << "args : [object] [texture]\n\nInput : WASD = Move the obj\n\tZ = Wireframe mode\n\tT = Texturing" << std::endl;
@@ -48,7 +64,7 @@ int main(int ac, char **av) {
         return -1;
     }
 	std::cout << texPath << std::endl;
-
+	Vec3 center = calculateCenter(mesh.vertices);
 	// build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
 
@@ -126,10 +142,19 @@ int main(int ac, char **av) {
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
 
 		Matrix4 model;
-		model.translate(Vec3(0.0f, 0.0f, 0.0f));
-		rotationAngle += 0.5f;
-		model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
-		model.scale(Vec3(1.0f, 1.0f, 1.0f));
+        // Translate to origin
+        model.translate(Vec3(-center.x, -center.y, -center.z));
+
+        // Rotate around the object's center
+        rotationAngle += 10.5f * deltaTime; // Use deltaTime for smooth rotation
+        model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
+
+        // Translate back to the original position
+        model.translate(center);
+		// model.translate(Vec3(0.0f, 0.0f, 0.0f));
+		// rotationAngle += 0.5f;
+		// model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
+		// model.scale(Vec3(1.0f, 1.0f, 1.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 
 		mesh.draw(myShader);
