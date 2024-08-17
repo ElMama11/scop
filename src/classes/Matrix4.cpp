@@ -50,70 +50,30 @@ void Matrix4::scale(Vec3 scaleVec) {
 	*this = multiply(scaleMatrix);
 }
 
-void Matrix4::rotateX(float angle) {
-	float rad = angle * M_PI / 180.0f;
-	float cosA = cos(rad);
-	float sinA = sin(rad);
-	Matrix4 rotationMatrix;
-	
-	rotationMatrix.data[5] = cosA;
-	rotationMatrix.data[6] = -sinA;
-	rotationMatrix.data[9] = sinA;
-	rotationMatrix.data[10] = cosA;
-	*this = multiply(rotationMatrix);
-}
-
-void Matrix4::rotateY(float angle) {
-	float rad = angle * M_PI / 180.0f;
-	float cosA = cos(rad);
-	float sinA = sin(rad);
-	Matrix4 rotationMatrix;
-	rotationMatrix.data[0] = cosA;
-	rotationMatrix.data[2] = sinA;
-	rotationMatrix.data[8] = -sinA;
-	rotationMatrix.data[10] = cosA;
-	*this = multiply(rotationMatrix);
-}
-
-void Matrix4::rotateZ(float angle) {
-	float rad = angle * M_PI / 180.0f;
-	float cosA = cos(rad);
-	float sinA = sin(rad);
-	Matrix4 rotationMatrix;
-	rotationMatrix.data[0] = cosA;
-	rotationMatrix.data[1] = -sinA;
-	rotationMatrix.data[4] = sinA;
-	rotationMatrix.data[5] = cosA;
-	*this = multiply(rotationMatrix);
-}
-
 void Matrix4::rotate(float angle, float x, float y, float z) {
-        float rad = angle * M_PI / 180.0f;
-        float cosA = cos(rad);
-        float sinA = sin(rad);
+		float rad = angle * M_PI / 180.0f;
+		float cosA = cos(rad);
+		float sinA = sin(rad);
+		float len = sqrt(x*x + y*y + z*z);
+		if (len != 1.0f) {
+			float invLen = 1.0f / len;
+			x *= invLen;
+			y *= invLen;
+			z *= invLen;
+		}
+		Matrix4 rotation;
+		rotation.data[0] = cosA + x*x*(1-cosA);
+		rotation.data[1] = x*y*(1-cosA) - z*sinA;
+		rotation.data[2] = x*z*(1-cosA) + y*sinA;
 
-        float len = sqrt(x*x + y*y + z*z);
-        if (len != 1.0f) {
-            float invLen = 1.0f / len;
-            x *= invLen;
-            y *= invLen;
-            z *= invLen;
-        }
+		rotation.data[4] = y*x*(1-cosA) + z*sinA;
+		rotation.data[5] = cosA + y*y*(1-cosA);
+		rotation.data[6] = y*z*(1-cosA) - x*sinA;
 
-        Matrix4 rotation;
-        rotation.data[0] = cosA + x*x*(1-cosA);
-        rotation.data[1] = x*y*(1-cosA) - z*sinA;
-        rotation.data[2] = x*z*(1-cosA) + y*sinA;
-
-        rotation.data[4] = y*x*(1-cosA) + z*sinA;
-        rotation.data[5] = cosA + y*y*(1-cosA);
-        rotation.data[6] = y*z*(1-cosA) - x*sinA;
-
-        rotation.data[8] = z*x*(1-cosA) - y*sinA;
-        rotation.data[9] = z*y*(1-cosA) + x*sinA;
-        rotation.data[10] = cosA + z*z*(1-cosA);
-
-        *this = this->multiply(rotation);
+		rotation.data[8] = z*x*(1-cosA) - y*sinA;
+		rotation.data[9] = z*y*(1-cosA) + x*sinA;
+		rotation.data[10] = cosA + z*z*(1-cosA);
+		*this = this->multiply(rotation);
 }
 
 void Matrix4::perspective(float fovY, float aspect, float zNear, float zFar) {
@@ -128,26 +88,24 @@ void Matrix4::perspective(float fovY, float aspect, float zNear, float zFar) {
 }
 
 Matrix4 Matrix4::lookAt(const Vec3 &cameraPos, const Vec3 &center, const Vec3 &up) {
-        Vec3 f = (center - cameraPos).normalize();
-        Vec3 u = up.normalize();
-        Vec3 s = Vec3::cross(f, u).normalize();
-        u = Vec3::cross(s, f);
-
-        Matrix4 result;
-        result.data[0] = s.x;
-        result.data[4] = s.y;
-        result.data[8] = s.z;
-        result.data[1] = u.x;
-        result.data[5] = u.y;
-        result.data[9] = u.z;
-        result.data[2] = -f.x;
-        result.data[6] = -f.y;
-        result.data[10] = -f.z;
-        result.data[12] = -s.x * cameraPos.x - s.y * cameraPos.y - s.z * cameraPos.z;
-        result.data[13] = -u.x * cameraPos.x - u.y * cameraPos.y - u.z * cameraPos.z;
-        result.data[14] = f.x * cameraPos.x + f.y * cameraPos.y + f.z * cameraPos.z;
-
-        return result;
+		Vec3 f = (center - cameraPos).normalize();
+		Vec3 u = up.normalize();
+		Vec3 s = Vec3::cross(f, u).normalize();
+		u = Vec3::cross(s, f);
+		Matrix4 result;
+		result.data[0] = s.x;
+		result.data[4] = s.y;
+		result.data[8] = s.z;
+		result.data[1] = u.x;
+		result.data[5] = u.y;
+		result.data[9] = u.z;
+		result.data[2] = -f.x;
+		result.data[6] = -f.y;
+		result.data[10] = -f.z;
+		result.data[12] = -s.x * cameraPos.x - s.y * cameraPos.y - s.z * cameraPos.z;
+		result.data[13] = -u.x * cameraPos.x - u.y * cameraPos.y - u.z * cameraPos.z;
+		result.data[14] = f.x * cameraPos.x + f.y * cameraPos.y + f.z * cameraPos.z;
+		return result;
 }
 
 const float *Matrix4::getValuePtr() const {

@@ -9,31 +9,30 @@
 #include "Shader.hpp"
 
 struct Vertex {
-    Vec3 position;
-    Vec3 normal;
-    Vec2 texCoords;
+	Vec3 position;
+	Vec3 normal;
+	Vec2 texCoords;
 };
 
 struct Texture {
-    unsigned int id;
-    std::string type;
+	unsigned int id;
+	std::string type;
 };
 
 class Mesh {
 	public:
-        // mesh data
-        std::vector<Vertex>          vertices;
-        std::vector<unsigned int>    indices;
-        std::vector<Texture>         textures;
+		// Mesh data
+		std::vector<Vertex>          vertices;
+		std::vector<unsigned int>    indices;
+		std::vector<Texture>         textures;
 
-        Mesh() = default;
-        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
-        void draw(Shader &shader);
+		Mesh() = default;
+		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+		void draw(Shader &shader);
 
-    private:
-        // render data
-        unsigned int VAO, VBO, EBO;
-        void setupMesh();
+	private:
+		unsigned int VAO, VBO, EBO;
+		void setupMesh();
 };
 
 #endif

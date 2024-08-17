@@ -5,7 +5,6 @@
 #include "Matrix4.hpp"
 #include <cmath>
 
-// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
 	UP,
 	BOTTOM,
@@ -22,21 +21,20 @@ const float ZOOM        =  45.0f;
 
 class Camera {
 	public:
-		// camera Attributes
+		// Camera Attributes
 		Vec3 Position;
 		Vec3 Front;
 		Vec3 Up;
 		Vec3 Right;
 		Vec3 WorldUp;
-		// euler Angles
+		// Euler Angles
 		float Yaw;
 		float Pitch;
-		// camera options
+		// Camera options
 		float MovementSpeed;
 		float MouseSensitivity;
 		float Zoom;
-
-		// constructors
+		// Constructors
 		Camera(Vec3 position = Vec3(0.0f, 0.0f, 0.0f), Vec3 up = Vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 		Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 		~Camera();
@@ -47,7 +45,6 @@ class Camera {
 		void ProcessMouseScroll(float yoffset);
 
 	private:
-		// calculates the front vector from the Camera's (updated) Euler Angles
 		void updateCameraVectors();
 };
 
