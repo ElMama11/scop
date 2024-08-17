@@ -170,22 +170,26 @@ void applyTransformations(Shader myShader, const Mesh& mesh) {
 
     // Step 1: Calculate the center of the object
     Vec3 center = calculateObjectCenter(mesh);
-
+	std::cout << "Object Center: " << center.x << ", " << center.y << ", " << center.z << std::endl;
     // Step 2: Create the model matrix
     Matrix4 model;
 
     // Step 3: Translate the object so its center is at the origin
     model.translate(Vec3(-center.x, -center.y, -center.z));
+	    std::cout << "After Translate to Origin:" << std::endl;
+    model.print();
 
     // Step 4: Rotate the object around its new origin (which is its center)
     rotationAngle += 0.5f;
     model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
-
+    std::cout << "After Rotation:" << std::endl;
+    model.print();
     // Step 5: Translate the object back to its original position
     model.translate(center);
-
+    std::cout << "After Translate Back:" << std::endl;
+    model.print();
     // Optional: Apply scaling if needed
-    model.scale(Vec3(1.0f, 1.0f, 1.0f));
+    // model.scale(Vec3(1.0f, 1.0f, 1.0f));
 
     // Send the model matrix to the shader
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
