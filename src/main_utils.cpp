@@ -41,8 +41,6 @@ GLFWwindow* initializeGlfw() {
 	#ifdef __APPLE__
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	#endif
-	
-	// glfw window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "scop", NULL, NULL);
 	if (window == NULL) {
 		throw std::runtime_error("Failed to create GLFW window");
@@ -50,11 +48,9 @@ GLFWwindow* initializeGlfw() {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	// tell GLFW to capture our mouse
+	// Tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	// glad: load all OpenGL function pointers
+	// Glad: load all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw std::runtime_error("Failed to initialize GLAD");
 	glEnable(GL_DEPTH_TEST);
@@ -64,19 +60,15 @@ GLFWwindow* initializeGlfw() {
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
-
 	if (firstMouse) {
 		lastX = xpos;
 		lastY = ypos;
 		firstMouse = false;
 	}
-
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
 	lastX = xpos;
 	lastY = ypos;
-
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
@@ -92,7 +84,6 @@ unsigned int buildTexture(char **av) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	// Load and generate texture
 	BmpImage image(texPath);
 	if (image.isValid()) {
@@ -147,11 +138,11 @@ void bindTexture(unsigned int texture) {
 }
 
 void applyTransformations(Shader myShader) {
+	// Get uniform variable in the Vshader
 	unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
 	unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
 	unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
-
-	// pass projection matrix to shader
+	// Pass projection matrix to shader
 	Matrix4 projection;
 	projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
@@ -159,14 +150,12 @@ void applyTransformations(Shader myShader) {
 	Matrix4 view;
 	view = camera.GetViewMatrix();
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
-
+	// Apply transformation on the object
 	Matrix4 model;
-
 	model.translate(Vec3(0.0f, 0.0f, 0.0f));
 	rotationAngle += 0.5f;
 	model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
 	model.scale(Vec3(1.0f, 1.0f, 1.0f));
-
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 }
 
@@ -176,7 +165,6 @@ void perFrameLogic() {
 	lastFrame = currentFrame;  
 }
 
-// Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow *window) {
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
