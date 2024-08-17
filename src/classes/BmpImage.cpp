@@ -7,8 +7,9 @@ bool BmpImage::flipVerticallyOnLoad = false;
 
 BmpImage::BmpImage(const std::string& filepath) : data(nullptr), valid(false) {
     loadBMP(filepath);
+    if (!valid)
+        return ;
     flipVertically();
-
 }
 
 BmpImage::~BmpImage() {
@@ -82,7 +83,6 @@ void BmpImage::loadBMP(const std::string& filepath) {
 void BmpImage::flipVertically() {
     int rowStride = ((width * 3 + 3) & ~3); // row size with padding
     std::vector<unsigned char> rowBuffer(rowStride);
-
     for (int i = 0; i < height / 2; ++i) {
         unsigned char* row1 = data + i * rowStride;
         unsigned char* row2 = data + (height - i - 1) * rowStride;

@@ -13,12 +13,11 @@
 # include "classes/Parser.hpp"
 # include "classes/Mesh.hpp"
 # include "classes/BmpImage.hpp"
-# include "main_utils.cpp"
-const unsigned int SCR_WIDTH = 1980;
-const unsigned int SCR_HEIGHT = 1080;
+extern const unsigned int SCR_WIDTH;
+extern const unsigned int SCR_HEIGHT;
+extern Camera camera;
 
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 GLFWwindow* initializeGlfw();
 #endif

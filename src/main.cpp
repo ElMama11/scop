@@ -15,10 +15,7 @@ bool zKeyPressed = false;
 bool wireframe = false;
 
 // Camera
-Camera camera(Vec3(0.0f, 0.0f, 6.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
+extern Camera camera;
 bool freeCamera = false;
 bool cKeyPressed = false;
 
@@ -72,7 +69,6 @@ int main(int ac, char **av) {
 	}
 	else
 		std::cerr << "Failed to load texture" << std::endl;
-
 	myShader.use();
 	myShader.setInt("ourTexture", 0);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -195,21 +191,3 @@ void processInput(GLFWwindow *window) {
 
 
 
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
-	float xpos = static_cast<float>(xposIn);
-	float ypos = static_cast<float>(yposIn);
-
-	if (firstMouse) {
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-	lastX = xpos;
-	lastY = ypos;
-
-	camera.ProcessMouseMovement(xoffset, yoffset);
-}
