@@ -13,11 +13,17 @@
 # include "classes/Parser.hpp"
 # include "classes/Mesh.hpp"
 # include "classes/BmpImage.hpp"
-extern const unsigned int SCR_WIDTH;
-extern const unsigned int SCR_HEIGHT;
-extern Camera camera;
 
+/* main_utils.cpp */
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 GLFWwindow* initializeGlfw();
+unsigned int buildTexture(char **av);
+Mesh parseMesh(char **av);
+void smoothTextureTransition(Shader myShader);
+void bindTexture(unsigned int texture);
+void applyTransformations(Shader myShader);
+void perFrameLogic();
+void processInput(GLFWwindow *window);
+void clearWindow();
 #endif
