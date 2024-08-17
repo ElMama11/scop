@@ -137,7 +137,23 @@ void bindTexture(unsigned int texture) {
 	}
 }
 
-void applyTransformations(Shader myShader) {
+Vec3 calculateObjectCenter(const Mesh& mesh) {
+    Vec3 center(0.0f, 0.0f, 0.0f);
+
+    for (const Vertex& vertex : mesh.vertices) {
+        center = center + vertex.position;  // Accumulate positions
+    }
+
+    // Divide by the number of vertices to get the average (center of the object)
+    if (!mesh.vertices.empty()) {
+        center = center / static_cast<float>(mesh.vertices.size());
+    }
+
+    return center;
+}
+
+
+void applyTransformations(Shader myShader, Mesh mesh) {
 	// Get uniform variable in the Vshader
 	unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
 	unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
@@ -152,10 +168,26 @@ void applyTransformations(Shader myShader) {
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
 	// Apply transformation on the object
 	Matrix4 model;
-	model.translate(Vec3(0.0f, 0.0f, 0.0f));
-	rotationAngle += 0.5f;
-	model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
+	 // Step 1: Calculate the center of the object
+    Vec3 center = calculateObjectCenter(mesh);
+
+    // Step 2: Translate the object to the origin (center becomes the pivot point)
+    model.translate(Vec3(-center.x, -center.y, -center.z));
+
+    // Step 3: Rotate the object around its new origin (previously its center)
+    rotationAngle += 0.5f;
+    model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
+
+    // Step 4: Translate the object back to its original position
+    model.translate(center);
+
+	// Optional: apply scaling
 	model.scale(Vec3(1.0f, 1.0f, 1.0f));
+	// model.translate(Vec3(0.0f, 0.0f, 0.0f));
+	// rotationAngle += 0.5f;
+	// model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
+	// model.scale(Vec3(1.0f, 1.0f, 1.0f));
+
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 }
 

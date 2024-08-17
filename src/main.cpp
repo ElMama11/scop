@@ -28,7 +28,7 @@ int main(int ac, char **av) {
 		myShader.use();
 		smoothTextureTransition(myShader);
 		bindTexture(texture);
-		applyTransformations(myShader);
+		applyTransformations(myShader, mesh);
 		mesh.draw(myShader);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
