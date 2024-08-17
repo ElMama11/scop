@@ -23,7 +23,7 @@ unsigned int buildTexture(char **av);
 Mesh parseMesh(char **av);
 void smoothTextureTransition(Shader myShader);
 void bindTexture(unsigned int texture);
-void applyTransformations(Shader myShader, Mesh mesh);
+void applyTransformations(Shader myShader, const Mesh& mesh);
 void perFrameLogic();
 void processInput(GLFWwindow *window);
 void clearWindow();
