@@ -137,61 +137,29 @@ void bindTexture(unsigned int texture) {
 	}
 }
 
-Vec3 calculateObjectCenter(const Mesh& mesh) {
-    Vec3 center(0.0f, 0.0f, 0.0f);
-
-    for (const Vertex& vertex : mesh.vertices) {
-        center = center + vertex.position;  // Accumulate positions
-    }
-
-    // Divide by the number of vertices to get the average (center of the object)
-    if (!mesh.vertices.empty()) {
-        center = center / static_cast<float>(mesh.vertices.size());
-    }
-
-    return center;
-}
-
-
 void applyTransformations(Shader myShader, const Mesh& mesh) {
     // Get uniform variables in the vertex shader
     unsigned int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
     unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
     unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
-
     // Pass projection matrix to shader
     Matrix4 projection;
     projection.perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.getValuePtr());
-
     // Camera/view transformation
     Matrix4 view = camera.GetViewMatrix();
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.getValuePtr());
-
-    // Step 1: Calculate the center of the object
-    Vec3 center = calculateObjectCenter(mesh);
-	std::cout << "Object Center: " << center.x << ", " << center.y << ", " << center.z << std::endl;
-    // Step 2: Create the model matrix
+    // Calculate the center of the object
+    Vec3 center = calculateObjectCenter(mesh); //calculateObjectCenter(mesh);
+    // Translate the object so its center is at the origin
     Matrix4 model;
-
-    // Step 3: Translate the object so its center is at the origin
-    model.translate(Vec3(-center.x, -center.y, -center.z));
-	    std::cout << "After Translate to Origin:" << std::endl;
-    model.print();
-
-    // Step 4: Rotate the object around its new origin (which is its center)
+	model.translate(center);
+    // Rotate the object around its new origin
     rotationAngle += 0.5f;
     model.rotate(rotationAngle, 0.0f, 1.0f, 0.0f);
-    std::cout << "After Rotation:" << std::endl;
-    model.print();
-    // Step 5: Translate the object back to its original position
-    model.translate(center);
-    std::cout << "After Translate Back:" << std::endl;
-    model.print();
-    // Optional: Apply scaling if needed
-    // model.scale(Vec3(1.0f, 1.0f, 1.0f));
-
-    // Send the model matrix to the shader
+    // Translate the object back to its original position
+    model.translate(Vec3(-center.x, -center.y, -center.z));
+    model.scale(Vec3(1.0f, 1.0f, 1.0f));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.getValuePtr());
 }
 
@@ -250,4 +218,14 @@ void processInput(GLFWwindow *window) {
 void clearWindow() {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+Vec3 calculateObjectCenter(const Mesh& mesh) {
+    Vec3 center(0.0f, 0.0f, 0.0f);
+    for (const Vertex& vertex : mesh.vertices)
+        center = center + vertex.position;  // Accumulate positions
+    // Divide by the number of vertices to get the average (center of the object)
+    if (!mesh.vertices.empty())
+        center = center / static_cast<float>(mesh.vertices.size());
+    return center;
 }

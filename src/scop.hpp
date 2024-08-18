@@ -23,6 +23,7 @@ unsigned int buildTexture(char **av);
 Mesh parseMesh(char **av);
 void smoothTextureTransition(Shader myShader);
 void bindTexture(unsigned int texture);
+Vec3 calculateObjectCenter(const Mesh& mesh);
 void applyTransformations(Shader myShader, const Mesh& mesh);
 void perFrameLogic();
 void processInput(GLFWwindow *window);
