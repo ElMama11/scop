@@ -50,6 +50,10 @@ class Vec3 {
 			return Vec3(x / scalar, y / scalar, z / scalar);
 		}
 
+		Vec3 operator-() const {
+			return Vec3(-x, -y, -z);
+		}
+
 		friend std::ostream &operator<<(std::ostream& os, const Vec3& vec) {
 			os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
 			return os;

@@ -1,8 +1,8 @@
-#include "scop.hpp"
+#include "includes/scop.hpp"
 
 int main(int ac, char **av) {
 	if (av[1] == NULL || av[2] == NULL || ac != 3) {
-		std::cerr << "args : [object] [texture]\n\nInput : WASD = Move the obj\n\tZ = Wireframe mode\n\tT = Texturing" << std::endl;
+		std::cerr << "Args : [object] [texture]\n\nExemple : ./scop backpack backpack\n\nInput : WASD = Move the obj\n\tZ = Wireframe mode\n\tT = Texturing\n\tC = Free camera\n\tESC = Quit" << std::endl;
 		return 0;
 	}
 	GLFWwindow* window;
@@ -18,21 +18,7 @@ int main(int ac, char **av) {
 	// Build and compile shader program
 	Shader myShader("shaders/shader1.vs", "shaders/shader1.fs");
 	myShader.setInt("ourTexture", 0);
-	
-	// Render loop
-	while (!glfwWindowShouldClose(window))
-	{
-		perFrameLogic();
-		processInput(window);
-		clearWindow();
-		myShader.use();
-		smoothTextureTransition(myShader);
-		bindTexture(texture);
-		applyTransformations(myShader, mesh);
-		mesh.draw(myShader);
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+	renderLoop(window, myShader, texture, mesh);
 	glfwTerminate();
 	return 0;
 }

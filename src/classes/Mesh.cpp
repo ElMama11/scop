@@ -28,7 +28,6 @@ void Mesh::setupMesh() {
 	glBindVertexArray(0);
 }
 
-
 void Mesh::draw(Shader &shader) 
 {
 	unsigned int diffuseNr = 1;
