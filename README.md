@@ -23,14 +23,24 @@ Args : `./scop [object] [texture]` without the file extension.
 ## How it looks
 
 - without vt mapping in obj file:<br/>
-`./scop Contents/Resources/obj/teapot2.obj`<br/>
+`./scop teapot t_container`<br/>
 
+<img src="resources/screenshots/teapot1.png"
+     alt="teapot screenshot"
+     style="float: left; margin-right: 10px;" />
+
+<br/>
+You can press `t` to apply a texture :
+<br/>
+<img src="resources/screenshots/teapot2.png"
+     alt="teapot screenshot"
+     style="float: left; margin-right: 10px;" />
 <br/>
 
 - With vt mapping in obj file:<br/>
-`./scop Contents/Resources/obj/backpack.obj -t diffuse.bmp`, Then press `t` to activate texture, then `KP 7` to use vt mapping described in the obj file, then `KP 8` to flip the texture (some obj need the texture to be flipped.).<br/>
+`./scop backpack t_backpack`, Then press `t` to activate texture, then `KP 7` to use vt mapping described in the obj file, then `KP 8` to flip the texture (some obj need the texture to be flipped.).<br/>
 
-<img src="screenshots/backpack.png"
-     alt="backpack vt screenshot"
+<img src="resources/screenshots/backpack.png"
+     alt="backpack screenshot"
      style="float: left; margin-right: 10px;" />
 <br/>
