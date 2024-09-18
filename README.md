@@ -3,7 +3,6 @@
 ## Description
 
 This project is an introduction to OpenGL. The objective is to create an app capable of rendering 3D wavefront obj file, and of applying them textures (only .BMP) by using C++ and OpenGL.<br/>
-<br/>
 
 ## Setup
 Requirements: `OpenGL version >= 3.3`.<br/>
