@@ -31,7 +31,8 @@ Args : `./scop [object] [texture]` without the file extension.
 
 <br/>
 You can press `t` to apply a texture :
-<br/>
+<br/> <br/>
+
 <img src="resources/screenshots/teapot2.png"
      alt="teapot screenshot"
      style="float: left; margin-right: 10px;" />
