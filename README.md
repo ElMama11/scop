@@ -39,7 +39,7 @@ You can press `t` to apply a texture :
 <br/>
 
 - With vt mapping in obj file:<br/>
-`./scop backpack t_backpack`, Then press `t` to activate texture, then `KP 7` to use vt mapping described in the obj file, then `KP 8` to flip the texture (some obj need the texture to be flipped.).<br/>
+`./scop backpack t_backpack`, Then press `t` to activate texture :<br/>
 
 <img src="resources/screenshots/backpack.png"
      alt="backpack screenshot"
