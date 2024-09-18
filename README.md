@@ -45,3 +45,10 @@ You can press `t` to apply the texture :
      alt="backpack screenshot"
      style="float: left; margin-right: 10px;" />
 <br/>
+
+With the wireframe mode enable :
+
+
+<img src="resources/screenshots/backpack_wireframe.png"
+     alt="backpack screenshot"
+     style="float: left; margin-right: 10px;" />
