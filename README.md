@@ -21,3 +21,16 @@ Args : `./scop [object] [texture]` without the file extension.
 `Z`: Switch to wireframe mode.<br/>
 
 ## How it looks
+
+- without vt mapping in obj file:<br/>
+`./scop Contents/Resources/obj/teapot2.obj`<br/>
+
+<br/>
+
+- With vt mapping in obj file:<br/>
+`./scop Contents/Resources/obj/backpack.obj -t diffuse.bmp`, Then press `t` to activate texture, then `KP 7` to use vt mapping described in the obj file, then `KP 8` to flip the texture (some obj need the texture to be flipped.).<br/>
+
+<img src="screenshots/backpack.png"
+     alt="backpack vt screenshot"
+     style="float: left; margin-right: 10px;" />
+<br/>
