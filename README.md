@@ -27,11 +27,11 @@ Args : `./scop [object] [texture]` without the file extension.
 
 <img src="resources/screenshots/teapot1.png"
      alt="teapot screenshot"
-     style="float: left; margin-right: 10px;" />
+     style="float: left; margin-right: 10px;" /><br/>
 
-<br/>
-You can press `t` to apply a texture :
-<br/> <br/>
+
+You can press `t` to apply the texture :
+
 
 <img src="resources/screenshots/teapot2.png"
      alt="teapot screenshot"
@@ -39,7 +39,7 @@ You can press `t` to apply a texture :
 <br/>
 
 - With vt mapping in obj file:<br/>
-`./scop backpack t_backpack`, Then press `t` to activate texture :<br/>
+`./scop backpack t_backpack`, then press `t` to apply the texture :<br/>
 
 <img src="resources/screenshots/backpack.png"
      alt="backpack screenshot"
